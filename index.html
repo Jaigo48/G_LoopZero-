@@ -1,0 +1,2144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LoopZero Ticket Triage</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f5f7fa;
+      color: #202124;
+    }
+
+    header {
+      background: #1f2937;
+      color: white;
+      padding: 20px 28px;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 22px;
+    }
+
+    header p {
+      margin: 6px 0 0;
+      color: #cbd5e1;
+      font-size: 14px;
+    }
+
+    .toolbar {
+      background: white;
+      border-bottom: 1px solid #ddd;
+      padding: 16px 28px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    button {
+      border: none;
+      border-radius: 6px;
+      padding: 10px 16px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .primary {
+      background: #2563eb;
+      color: white;
+    }
+
+    .primary:hover {
+      background: #1d4ed8;
+    }
+
+    .secondary {
+      background: #e5e7eb;
+      color: #111827;
+    }
+
+    .success {
+      background: #16a34a;
+      color: white;
+    }
+
+    .danger {
+      background: #dc2626;
+      color: white;
+    }
+
+    input[type="file"] {
+      display: none;
+    }
+
+    .file-label {
+      background: #2563eb;
+      color: white;
+      padding: 10px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .status-bar {
+      padding: 18px 28px;
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .stat {
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 14px 18px;
+      min-width: 130px;
+    }
+
+    .stat-number {
+      display: block;
+      font-size: 22px;
+      font-weight: bold;
+    }
+
+    .stat-label {
+      color: #6b7280;
+      font-size: 12px;
+      margin-top: 3px;
+    }
+
+    .container {
+      padding: 0 28px 40px;
+    }
+
+    .panel {
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+
+    .panel-header {
+      padding: 16px 18px;
+      border-bottom: 1px solid #e5e7eb;
+      font-weight: bold;
+    }
+
+    .tickets-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th {
+      background: #f9fafb;
+      text-align: left;
+      font-size: 12px;
+      color: #6b7280;
+      padding: 12px;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    td {
+      padding: 12px;
+      border-bottom: 1px solid #f0f0f0;
+      font-size: 14px;
+      vertical-align: top;
+    }
+
+    tr.ticket-row {
+      cursor: pointer;
+    }
+
+    tr.ticket-row:hover {
+      background: #f8fafc;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: bold;
+    }
+
+    .critical {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .high {
+      background: #ffedd5;
+      color: #9a3412;
+    }
+
+    .medium {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .low {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .pending {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .approved {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+
+    .done {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .error {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .detail {
+      display: none;
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 24px;
+    }
+
+    .detail.active {
+      display: block;
+    }
+
+    .detail-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 20px;
+      margin-bottom: 22px;
+    }
+
+    .detail-header h2 {
+      margin: 0 0 6px;
+    }
+
+    .muted {
+      color: #6b7280;
+      font-size: 14px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .field {
+      background: #f9fafb;
+      border-radius: 6px;
+      padding: 12px;
+    }
+
+    .field-label {
+      font-size: 11px;
+      color: #6b7280;
+      text-transform: uppercase;
+      margin-bottom: 5px;
+    }
+
+    .field-value {
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .section {
+      margin-top: 22px;
+    }
+
+    .section h3 {
+      font-size: 15px;
+      margin: 0 0 8px;
+    }
+
+    .message-box,
+    .reason-box,
+    .draft-box {
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      border-radius: 6px;
+      padding: 14px;
+      white-space: pre-wrap;
+      line-height: 1.5;
+      font-size: 14px;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 110px;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      padding: 12px;
+      font-family: inherit;
+      font-size: 14px;
+      resize: vertical;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+
+    .empty {
+      padding: 40px;
+      text-align: center;
+      color: #6b7280;
+    }
+
+    .notice {
+      background: #eff6ff;
+      color: #1e40af;
+      border: 1px solid #bfdbfe;
+      padding: 12px 16px;
+      margin: 18px 28px 0;
+      border-radius: 6px;
+      font-size: 14px;
+      display: none;
+    }
+
+    @media (max-width: 800px) {
+      .grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .container {
+        padding: 0 14px 30px;
+      }
+
+      .status-bar {
+        padding: 14px;
+      }
+
+      .toolbar {
+        padding: 14px;
+      }
+
+      header {
+        padding: 18px;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <h1>LoopZero Ticket Triage</h1>
+  <p>Simple ticket triage using local rules</p>
+</header>
+
+<div class="toolbar">
+
+  <label class="file-label">
+    Import JSON
+    <input type="file" id="jsonFile" accept=".json,application/json">
+  </label>
+
+  <button class="primary" onclick="runTriage()">
+    Run Triage
+  </button>
+
+  <button class="success" onclick="approveSelectedTickets()">
+    Approve Selected
+  </button>
+
+  <button class="primary" onclick="finalizeApprovedActions()">
+    Finalize Approved
+  </button>
+
+  <button class="secondary" onclick="clearTickets()">
+    Clear
+  </button>
+
+</div>
+
+<div id="notice" class="notice"></div>
+
+<div class="status-bar">
+
+  <div class="stat">
+    <span class="stat-number" id="ticketCount">0</span>
+    <span class="stat-label">Tickets</span>
+  </div>
+
+  <div class="stat">
+    <span class="stat-number" id="openCount">0</span>
+    <span class="stat-label">Open</span>
+  </div>
+
+  <div class="stat">
+    <span class="stat-number" id="pendingCount">0</span>
+    <span class="stat-label">Pending Review</span>
+  </div>
+
+  <div class="stat">
+    <span class="stat-number" id="completedCount">0</span>
+    <span class="stat-label">Completed</span>
+  </div>
+
+</div>
+
+<div class="container">
+
+  <div class="panel" id="dashboardPanel">
+
+  <div class="panel-header tickets-header">
+
+    <span>Dashboard</span>
+
+    <button
+      class="secondary"
+      onclick="showTickets()"
+    >
+      Back to Tickets
+    </button>
+
+  </div>
+
+    <div id="dashboardContainer">
+      <div class="empty">
+        Import your JSON file to load dashboard data.
+      </div>
+    </div>
+
+  </div>
+
+  <div class="panel" id="ticketsPanel">
+
+  <div class="panel-header tickets-header">
+
+    <span>Tickets</span>
+
+    <button
+      class="secondary"
+      onclick="showDashboard()"
+    >
+      Dashboard
+    </button>
+
+  </div>
+
+    <div id="ticketTableContainer">
+      <div class="empty">
+        Import your JSON file to load tickets.
+      </div>
+    </div>
+
+    </div>
+
+
+  <!-- =====================================================
+       TICKET DETAIL VIEW
+  ====================================================== -->
+
+  <div id="ticketDetail" class="detail">
+
+    <div class="detail-header">
+
+      <div>
+        <h2 id="detailTitle">Ticket</h2>
+        <div class="muted" id="detailCustomer"></div>
+      </div>
+
+      <button class="secondary" onclick="closeTicket()">
+        Back to Tickets
+      </button>
+
+    </div>
+
+    <div class="grid">
+
+      <div class="field">
+        <div class="field-label">Category</div>
+        <div class="field-value" id="detailCategory"></div>
+      </div>
+
+      <div class="field">
+        <div class="field-label">Company</div>
+        <div class="field-value" id="detailCompany"></div>
+      </div>
+
+      <div class="field">
+        <div class="field-label">Tier</div>
+        <div class="field-value" id="detailTier"></div>
+      </div>
+
+      <div class="field">
+        <div class="field-label">Sentiment</div>
+        <div class="field-value" id="detailSentiment"></div>
+      </div>
+
+      <div class="field">
+        <div class="field-label">Priority</div>
+        <div class="field-value" id="detailPriority"></div>
+      </div>
+
+      <div class="field">
+        <div class="field-label">Status</div>
+        <div class="field-value" id="detailStatus"></div>
+      </div>
+
+      <div class="field">
+        <div class="field-label">AI Decision</div>
+        <div class="field-value" id="detailDecision"></div>
+      </div>
+
+      <div class="field">
+        <div class="field-label">Action</div>
+        <div class="field-value" id="detailAction"></div>
+      </div>
+
+    </div>
+
+    <div class="section">
+
+      <h3>Customer Message</h3>
+
+      <div class="message-box" id="detailMessage"></div>
+
+    </div>
+
+    <div class="section">
+
+      <h3>AI Reason</h3>
+
+      <div class="reason-box" id="detailReason"></div>
+
+    </div>
+
+    <div class="section">
+
+      <h3>AI Response Draft</h3>
+
+      <div class="draft-box" id="detailDraft"></div>
+
+    </div>
+
+    <div class="section">
+
+      <h3>Human Notes</h3>
+
+      <textarea id="humanNotes" placeholder="Add your notes here..."></textarea>
+
+    </div>
+
+    <div class="actions">
+
+  <button class="primary" onclick="saveNotes()">
+    Save Notes
+  </button>
+
+  <button class="success" onclick="approveCurrentTicket()">
+    Approve Ticket
+  </button>
+
+  <button class="primary" onclick="finalizeCurrentTicket()">
+    Finalize Ticket
+  </button>
+
+</div>
+
+  </div>
+
+</div>
+
+
+<script>
+
+let tickets = [];
+let currentTicketIndex = null;
+
+/* ---------------------------------------------------------
+   VIEW NAVIGATION
+--------------------------------------------------------- */
+
+function showDashboard() {
+
+  document.getElementById("dashboardPanel").style.display = "block";
+  document.getElementById("ticketsPanel").style.display = "none";
+
+  const ticketDetail =
+    document.getElementById("ticketDetail");
+
+  if (ticketDetail) {
+    ticketDetail.classList.remove("active");
+  }
+
+}
+
+
+function showTickets() {
+
+  document.getElementById("dashboardPanel").style.display = "none";
+  document.getElementById("ticketsPanel").style.display = "block";
+
+  const ticketDetail =
+    document.getElementById("ticketDetail");
+
+  if (ticketDetail) {
+    ticketDetail.classList.remove("active");
+  }
+
+  currentTicketIndex = null;
+
+}
+
+/* ---------------------------------------------------------
+   JSON IMPORT
+--------------------------------------------------------- */
+
+document.getElementById("jsonFile").addEventListener("change", function(event) {
+
+  const file = event.target.files[0];
+
+  if (!file) return;
+
+  const reader = new FileReader();
+
+  reader.onload = function(e) {
+
+    try {
+
+      const imported = JSON.parse(e.target.result);
+
+      if (!Array.isArray(imported)) {
+        throw new Error("JSON must contain an array of tickets.");
+      }
+
+      tickets = imported.map(ticket => ({
+
+        ID: ticket.id,
+        Category: ticket.category || "",
+        Customer: ticket.customer || "",
+        Company: ticket.company || "",
+        Tier: ticket.tier || "",
+        Message: ticket.message || "",
+
+        Sentiment: "",
+        Action: "",
+        Priority: "",
+        AI_Decision: "",
+        AI_Reason: "",
+        Status: "OPEN",
+        Approved_By: "",
+        Approval_Time: "",
+        Human_Notes: "",
+        AI_Response_Draft: "",
+        Last_Import: new Date().toLocaleString(),
+
+        Health_Score: "",
+        Risk_Level: "",
+        Score_Reasons: ""
+
+      }));
+
+      showNotice(
+        `${tickets.length} ticket${tickets.length === 1 ? "" : "s"} imported successfully.`
+      );
+
+      renderTickets();
+      updateStats();
+      updateDashboard();
+
+    } catch (error) {
+
+      alert("Could not import JSON:\n\n" + error.message);
+
+    }
+
+  };
+
+  reader.readAsText(file);
+
+});
+
+
+/* ---------------------------------------------------------
+   TRIAGE
+   Based on the active localRulesOnly branch of your
+   existing runLoopZeroTriage() function.
+--------------------------------------------------------- */
+
+function runTriage() {
+
+  if (tickets.length === 0) {
+
+    alert("Import your JSON tickets first.");
+
+    return;
+  }
+
+  tickets.forEach(ticket => {
+
+    if (
+      !ticket.Message ||
+      ["DONE", "DONE_FINAL", "APPROVED", "CORRECTED", "IN_PROGRESS"]
+        .includes(ticket.Status)
+    ) {
+      return;
+    }
+
+    const message = ticket.Message;
+    const lowerMessage = message.toLowerCase();
+
+    let sentimentResult = "Neutral";
+    let actionResult = "Standard Followup";
+    let priorityResult = "LOW";
+    let decisionResult = "UNCLASSIFIED";
+    let reasonResult = "No AI decision generated.";
+    let statusResult = "PENDING_REVIEW";
+    let responseDraft = "";
+
+
+    /* SENTIMENT */
+
+    const highFrustrationKeywords = [
+      "urgent",
+      "impossible",
+      "locked out",
+      "can't access",
+      "cannot access",
+      "unable to access",
+      "not working",
+      "broken",
+      "blocked",
+      "crashing",
+      "crash",
+      "error",
+      "failed",
+      "failure",
+      "deleted",
+      "lost data",
+      "data loss"
+    ];
+
+    const positiveSentimentKeywords = [
+      "love",
+      "great",
+      "excellent",
+      "happy",
+      "thank you",
+      "thanks",
+      "works perfectly"
+    ];
+
+    if (
+      highFrustrationKeywords.some(keyword =>
+        lowerMessage.includes(keyword)
+      )
+    ) {
+
+      sentimentResult = "High Frustration";
+
+    } else if (
+      positiveSentimentKeywords.some(keyword =>
+        lowerMessage.includes(keyword)
+      )
+    ) {
+
+      sentimentResult = "Positive";
+
+    } else {
+
+      sentimentResult = "Neutral";
+
+    }
+
+
+    /* CATEGORY LOGIC */
+
+    const messagePreview =
+      message.length > 150
+        ? message.substring(0, 150) + "..."
+        : message;
+
+
+    if (ticket.Category === "Technical Bug") {
+
+      decisionResult = "HUMAN_ESCALATION";
+
+      const priorityKeywords = [
+        "cannot access",
+        "can't access",
+        "blocked",
+        "down",
+        "data loss",
+        "all users",
+        "urgent",
+        "production down",
+        "system unavailable",
+        "login failure",
+        "security issue",
+        "customer data",
+        "unable to work",
+        "entire team",
+        "504",
+        "gateway timeout",
+        "blocking",
+        "blocked our",
+        "leadership review",
+        "business critical"
+      ];
+
+      const highPriority =
+        priorityKeywords.some(keyword =>
+          lowerMessage.includes(keyword)
+        );
+
+      if (highPriority) {
+
+        priorityResult = "HIGH";
+
+      } else {
+
+        priorityResult = "MEDIUM";
+
+      }
+
+      reasonResult =
+        "Technical issue requires human investigation and customer follow-up.\n\n" +
+        "Escalation Priority: " +
+        (
+          highPriority
+            ? "HIGH - Customer workflow is significantly impacted and requires prompt attention."
+            : "MEDIUM - Customer issue requires investigation but no critical workflow impact was identified."
+        );
+
+
+      responseDraft =
+        "Hello " + ticket.Customer + ",\n\n" +
+        "Thank you for bringing this issue to our attention. We understand the impact that this issue can have on your team's workflow.\n\n" +
+        "Our team is reviewing the reported issue and investigating the cause. We will continue to provide updates as we make progress toward a resolution.\n\n" +
+        "Thank you,\nLoopZero Support";
+
+
+    } else if (ticket.Category === "Feature Request") {
+
+      decisionResult = "PRODUCT_REVIEW";
+
+      reasonResult =
+        "Customer feedback may influence future product improvements and should be reviewed by the product team for roadmap consideration.";
+
+      responseDraft =
+        "Hello " + ticket.Customer + ",\n\n" +
+        "Thank you for sharing your feature request.\n\n" +
+        "You mentioned:\n\"" +
+        messagePreview +
+        "\"\n\n" +
+        "We have documented your feedback and our product team will review it as part of our roadmap process.\n\n" +
+        "Thank you,\nLoopZero Support";
+
+
+    } else if (ticket.Category === "User Error") {
+
+      const seriousUserErrorKeywords = [
+        "deleted",
+        "restore",
+        "lost data",
+        "data loss",
+        "locked out",
+        "password reset",
+        "reset email",
+        "can't access",
+        "cannot access",
+        "unable to access",
+        "login failure"
+      ];
+
+      const requiresHumanReview =
+        seriousUserErrorKeywords.some(keyword =>
+          lowerMessage.includes(keyword)
+        );
+
+
+      if (requiresHumanReview) {
+
+        decisionResult = "HUMAN_ESCALATION";
+
+        reasonResult =
+          "Customer message indicates a potential account access or data-loss issue that should be investigated by a human.";
+
+        responseDraft =
+          "Hello " + ticket.Customer + ",\n\n" +
+          "Thank you for bringing this issue to our attention.\n\n" +
+          "Because your message involves a potential account access or data-loss issue, our support team will review it and follow up with you directly.\n\n" +
+          "Thank you,\nLoopZero Support";
+
+      } else {
+
+        decisionResult = "AUTOMATED_RESPONSE";
+
+        reasonResult =
+          "Customer can likely resolve this quickly through guided self-service resources.";
+
+        responseDraft =
+          "Hello " + ticket.Customer + ",\n\n" +
+          "Thank you for reaching out.\n\n" +
+          "It looks like you are trying to:\n\"" +
+          messagePreview +
+          "\"\n\n" +
+          "We have prepared a quick guide that walks you through how to find and use this feature:\n\n" +
+          "FAQ Guide:\n[YOUR EXISTING FAQ/LINK CODE]\n\n" +
+          "If you have any additional questions or need further assistance, please let us know and we will be happy to help.\n\n" +
+          "Thank you,\nLoopZero Support";
+
+      }
+
+
+    } else {
+
+      decisionResult = "HUMAN_REVIEW";
+
+      reasonResult =
+        "Category not recognized. Human review required.";
+
+    }
+
+
+    /* SAFE MODE */
+
+    statusResult = "PENDING_REVIEW";
+
+
+    /* WRITE RESULTS */
+
+    ticket.Sentiment = sentimentResult;
+    ticket.Action = actionResult;
+    ticket.Priority = priorityResult;
+    ticket.AI_Decision = decisionResult;
+    ticket.AI_Reason = reasonResult;
+    ticket.Status = statusResult;
+    ticket.AI_Response_Draft = responseDraft;
+
+  });
+
+
+  renderTickets();
+  updateStats();
+  updateDashboard();
+
+  showNotice("Triage complete. Tickets are ready for review.");
+
+}
+
+
+/* ---------------------------------------------------------
+   TICKET LIST
+--------------------------------------------------------- */
+
+function renderTickets() {
+
+  const container =
+    document.getElementById("ticketTableContainer");
+
+  if (tickets.length === 0) {
+
+    container.innerHTML =
+      '<div class="empty">Import your JSON file to load tickets.</div>';
+
+    return;
+  }
+
+
+  let html = `
+
+    <table>
+
+      <thead>
+
+         <tr>
+          <th>
+            <input type="checkbox" id="selectAllTickets" onchange="toggleAllTickets(this.checked)">
+          </th>
+          <th>ID</th>
+          <th>Customer</th>
+          <th>Company</th>
+          <th>Category</th>
+          <th>Tier</th>
+          <th>Sentiment</th>
+          <th>Priority</th>
+          <th>Decision</th>
+          <th>Status</th>
+        </tr>
+
+      </thead>
+
+      <tbody>
+  `;
+
+
+  tickets.forEach((ticket, index) => {
+
+    html += `
+
+       <tr class="ticket-row" onclick="openTicket(${index})">
+
+        <td onclick="event.stopPropagation()">
+          <input
+            type="checkbox"
+            class="ticket-checkbox"
+            data-index="${index}"
+          >
+        </td>
+
+        <td>${escapeHtml(ticket.ID)}</td> 
+
+        <td>${escapeHtml(ticket.Customer)}</td>
+
+        <td>${escapeHtml(ticket.Company)}</td>
+
+        <td>${escapeHtml(ticket.Category)}</td>
+
+        <td>${escapeHtml(ticket.Tier)}</td>
+
+        <td>${escapeHtml(ticket.Sentiment || "�")}</td>
+
+        <td>
+          ${priorityBadge(ticket.Priority)}
+        </td>
+
+        <td>${escapeHtml(ticket.AI_Decision || "�")}</td>
+
+        <td>
+          ${statusBadge(ticket.Status)}
+        </td>
+
+      </tr>
+
+    `;
+
+  });
+
+
+  html += `
+      </tbody>
+    </table>
+  `;
+
+
+  container.innerHTML = html;
+
+}
+
+/* ---------------------------------------------------------
+   TICKET SELECTION
+--------------------------------------------------------- */
+
+function toggleAllTickets(checked) {
+
+  const checkboxes =
+    document.querySelectorAll(".ticket-checkbox");
+
+  checkboxes.forEach(checkbox => {
+    checkbox.checked = checked;
+  });
+
+}
+
+
+function getSelectedTicketIndexes() {
+
+  const selected = [];
+
+  const checkboxes =
+    document.querySelectorAll(".ticket-checkbox:checked");
+
+  checkboxes.forEach(checkbox => {
+
+    selected.push(
+      Number(checkbox.dataset.index)
+    );
+
+  });
+
+  return selected;
+
+}
+
+/* ---------------------------------------------------------
+   APPROVAL
+--------------------------------------------------------- */
+
+function approveSelectedTickets() {
+
+  const selectedIndexes = getSelectedTicketIndexes();
+
+  if (selectedIndexes.length === 0) {
+
+    showNotice("Please select at least one ticket to approve.");
+
+    return;
+  }
+
+  let approvedCount = 0;
+  let skippedCount = 0;
+
+  const approvedBy = "Local User";
+  const approvalTime = new Date().toLocaleString();
+
+  selectedIndexes.forEach(index => {
+
+    const ticket = tickets[index];
+
+    if (ticket.Status !== "PENDING_REVIEW") {
+
+      skippedCount++;
+
+      return;
+    }
+
+    ticket.Status = "APPROVED";
+    ticket.Approved_By = approvedBy;
+    ticket.Approval_Time = approvalTime;
+
+    approvedCount++;
+
+  });
+
+  renderTickets();
+  updateStats();
+
+  showNotice(
+    approvedCount +
+    " ticket(s) approved. " +
+    skippedCount +
+    " ticket(s) skipped."
+  );
+
+}
+
+/* ---------------------------------------------------------
+   FINALIZATION
+--------------------------------------------------------- */
+
+function finalizeApprovedActions() {
+
+  let finalizedCount = 0;
+  let skippedCount = 0;
+
+  tickets.forEach(ticket => {
+
+    if (
+      ticket.Status !== "APPROVED" &&
+      ticket.Status !== "CORRECTED"
+    ) {
+
+      return;
+    }
+
+    const approvalBy =
+      ticket.Approved_By || "Unknown User";
+
+    const approvalTime =
+      ticket.Approval_Time || "";
+
+    let finalStatus = "DONE_FINAL";
+    let finalNote = "";
+
+    if (ticket.AI_Decision === "HUMAN_ESCALATION") {
+
+      finalNote =
+        "AI Decision: HUMAN_ESCALATION. Human review and action completed.";
+
+    } else if (ticket.AI_Decision === "PRODUCT_REVIEW") {
+
+      finalNote =
+        "AI Decision: PRODUCT_REVIEW. Human review and action completed.";
+
+    } else if (ticket.AI_Decision === "AUTOMATED_RESPONSE") {
+
+      finalNote =
+        "AI Decision: AUTOMATED_RESPONSE. Human review and action completed.";
+
+    } else {
+
+      finalNote =
+        "AI Decision: " +
+        (ticket.AI_Decision || "UNKNOWN") +
+        ". Human review and action completed.";
+
+    }
+
+    const existingNotes =
+      ticket.Human_Notes || "";
+
+    ticket.Human_Notes =
+      existingNotes
+        ? existingNotes +
+          "\n\n[LoopZero Finalization]\n" +
+          finalNote
+        : finalNote;
+
+    ticket.Status = finalStatus;
+    ticket.Approved_By = approvalBy;
+    ticket.Approval_Time = approvalTime;
+
+    finalizedCount++;
+
+  });
+
+
+  renderTickets();
+  updateStats();
+
+
+  if (finalizedCount === 0) {
+
+    showNotice(
+      "No approved tickets were available for finalization."
+    );
+
+    return;
+  }
+
+
+  showNotice(
+    finalizedCount +
+    " ticket(s) finalized."
+  );
+
+}
+
+/* ---------------------------------------------------------
+   CURRENT TICKET APPROVAL
+--------------------------------------------------------- */
+
+function approveCurrentTicket() {
+
+  if (currentTicketIndex === null) {
+    showNotice("No ticket is currently open.");
+    return;
+  }
+
+  const ticket = tickets[currentTicketIndex];
+
+   ticket.Human_Notes =
+    document.getElementById("humanNotes").value;
+
+  if (ticket.Status !== "PENDING_REVIEW") {
+
+    showNotice(
+      "Only tickets with PENDING_REVIEW status can be approved."
+    );
+
+    return;
+  }
+
+  ticket.Status = "APPROVED";
+  ticket.Approved_By = "Local User";
+  ticket.Approval_Time = new Date().toLocaleString();
+
+  renderTickets();
+  updateStats();
+  openTicket(currentTicketIndex);
+
+  showNotice(
+    "Ticket #" +
+    ticket.ID +
+    " approved."
+  );
+
+}
+
+/* ---------------------------------------------------------
+   CURRENT TICKET FINALIZATION
+--------------------------------------------------------- */
+
+function finalizeCurrentTicket() {
+
+  if (currentTicketIndex === null) {
+    showNotice("No ticket is currently open.");
+    return;
+  }
+
+  const ticket = tickets[currentTicketIndex];
+
+  ticket.Human_Notes =
+    document.getElementById("humanNotes").value;
+
+  if (
+    ticket.Status !== "APPROVED" &&
+    ticket.Status !== "CORRECTED"
+  ) {
+
+    showNotice(
+      "Only approved tickets can be finalized."
+    );
+
+    return;
+  }
+
+  const finalNote =
+    "AI Decision: " +
+    (ticket.AI_Decision || "UNKNOWN") +
+    ". Human review and action completed.";
+
+  const existingNotes =
+    ticket.Human_Notes || "";
+
+  ticket.Human_Notes =
+    existingNotes
+      ? existingNotes +
+        "\n\n[LoopZero Finalization]\n" +
+        finalNote
+      : finalNote;
+
+  ticket.Status = "DONE_FINAL";
+
+  renderTickets();
+  updateStats();
+  openTicket(currentTicketIndex);
+
+  showNotice(
+    "Ticket #" +
+    ticket.ID +
+    " finalized."
+  );
+
+}
+
+/* ---------------------------------------------------------
+   TICKET DETAIL
+--------------------------------------------------------- */
+
+function openTicket(index) {
+
+  currentTicketIndex = index;
+
+  document.getElementById("dashboardPanel").style.display = "none";
+  document.getElementById("ticketsPanel").style.display = "none";
+
+  const ticketDetail =
+    document.getElementById("ticketDetail");
+
+  ticketDetail.classList.add("active");
+
+  const ticket = tickets[index];
+
+  document.getElementById("ticketDetail")
+    .classList.add("active");
+
+  document.querySelector(".panel")
+    .style.display = "none";
+
+
+  document.getElementById("detailTitle").textContent =
+    "Ticket #" + ticket.ID;
+
+  document.getElementById("detailCustomer").textContent =
+    ticket.Customer + " � " + ticket.Company;
+
+
+  document.getElementById("detailCategory").textContent =
+    ticket.Category;
+
+  document.getElementById("detailCompany").textContent =
+    ticket.Company;
+
+  document.getElementById("detailTier").textContent =
+    ticket.Tier;
+
+  document.getElementById("detailSentiment").textContent =
+    ticket.Sentiment || "�";
+
+  document.getElementById("detailPriority").textContent =
+    ticket.Priority || "�";
+
+  document.getElementById("detailStatus").textContent =
+    ticket.Status || "�";
+
+  document.getElementById("detailDecision").textContent =
+    ticket.AI_Decision || "�";
+
+  document.getElementById("detailAction").textContent =
+    ticket.Action || "�";
+
+  document.getElementById("detailMessage").textContent =
+    ticket.Message;
+
+  document.getElementById("detailReason").textContent =
+    ticket.AI_Reason || "Triage has not been run.";
+
+  document.getElementById("detailDraft").textContent =
+    ticket.AI_Response_Draft || "No response draft generated.";
+
+  document.getElementById("humanNotes").value =
+    ticket.Human_Notes || "";
+
+}
+
+function openTicketById(ticketId) {
+
+  const index = tickets.findIndex(ticket =>
+    String(ticket.ID) === String(ticketId)
+  );
+
+  if (index === -1) {
+
+    alert("Ticket could not be found.");
+
+    return;
+  }
+
+  openTicket(index);
+
+}
+
+function closeTicket() {
+
+  currentTicketIndex = null;
+
+  document.getElementById("ticketDetail")
+    .classList.remove("active");
+
+  document.getElementById("dashboardPanel").style.display = "none";
+  document.getElementById("ticketsPanel").style.display = "block";
+
+}
+
+/* ---------------------------------------------------------
+   NOTES / COMPLETION
+--------------------------------------------------------- */
+
+function saveNotes() {
+
+  if (currentTicketIndex === null) return;
+
+  tickets[currentTicketIndex].Human_Notes =
+    document.getElementById("humanNotes").value;
+
+  showNotice("Human notes saved.");
+
+}
+
+
+
+/* ---------------------------------------------------------
+   STATS
+--------------------------------------------------------- */
+
+function updateStats() {
+
+  const total = tickets.length;
+
+  const completed =
+    tickets.filter(t =>
+      ["DONE", "DONE_FINAL"].includes(t.Status)
+    ).length;
+
+  const pending =
+    tickets.filter(t =>
+      t.Status === "PENDING_REVIEW"
+    ).length;
+
+  const open =
+    total - completed;
+
+
+  document.getElementById("ticketCount")
+    .textContent = total;
+
+  document.getElementById("openCount")
+    .textContent = open;
+
+  document.getElementById("pendingCount")
+    .textContent = pending;
+
+  document.getElementById("completedCount")
+    .textContent = completed;
+
+}
+
+/* ---------------------------------------------------------
+   DASHBOARD
+--------------------------------------------------------- */
+
+function updateDashboard() {
+
+  const totalTickets = tickets.length;
+
+  const pendingReview =
+    tickets.filter(ticket =>
+      ticket.Status === "PENDING_REVIEW"
+    ).length;
+
+  const completed =
+    tickets.filter(ticket =>
+      ["DONE", "DONE_FINAL"].includes(ticket.Status)
+    ).length;
+
+  const escalations =
+    tickets.filter(ticket =>
+      ticket.AI_Decision === "HUMAN_ESCALATION"
+    ).length;
+
+  const completionRate =
+    totalTickets > 0
+      ? completed / totalTickets
+      : 0;
+
+
+  /* -------------------------------------------------------
+     CATEGORY COUNTS
+  ------------------------------------------------------- */
+
+  const categoryCounts = {};
+
+  tickets.forEach(ticket => {
+
+    const category =
+      ticket.Category || "Unknown";
+
+    categoryCounts[category] =
+      (categoryCounts[category] || 0) + 1;
+
+  });
+
+
+  /* -------------------------------------------------------
+     TIER COUNTS
+  ------------------------------------------------------- */
+
+  const tierCounts = {};
+
+  tickets.forEach(ticket => {
+
+    const tier =
+      ticket.Tier || "Unknown";
+
+    tierCounts[tier] =
+      (tierCounts[tier] || 0) + 1;
+
+  });
+
+
+  /* -------------------------------------------------------
+     PRIORITY COUNTS
+  ------------------------------------------------------- */
+
+  const priorityCounts = {};
+
+  tickets.forEach(ticket => {
+
+    const priority =
+      ticket.Priority || "Unclassified";
+
+    priorityCounts[priority] =
+      (priorityCounts[priority] || 0) + 1;
+
+  });
+
+
+  /* -------------------------------------------------------
+     SENTIMENT COUNTS
+  ------------------------------------------------------- */
+
+  const sentimentCounts = {};
+
+  tickets.forEach(ticket => {
+
+    const sentiment =
+      ticket.Sentiment || "Unclassified";
+
+    sentimentCounts[sentiment] =
+      (sentimentCounts[sentiment] || 0) + 1;
+
+  });
+
+
+  /* -------------------------------------------------------
+     AI DECISION COUNTS
+  ------------------------------------------------------- */
+
+  const decisionCounts = {};
+
+  tickets.forEach(ticket => {
+
+    const decision =
+      ticket.AI_Decision || "Unclassified";
+
+    decisionCounts[decision] =
+      (decisionCounts[decision] || 0) + 1;
+
+  });
+  
+  /* -------------------------------------------------------
+     CUSTOMER RISK COUNTS
+  ------------------------------------------------------- */
+
+  const riskCounts = {
+    "Critical": 0,
+    "At Risk": 0,
+    "Healthy": 0
+  };
+
+  tickets.forEach(ticket => {
+
+    const risk =
+      ticket.Risk_Level || "";
+
+    if (riskCounts.hasOwnProperty(risk)) {
+      riskCounts[risk]++;
+    }
+
+  });
+
+  /* -------------------------------------------------------
+     SUPPORT QUEUE
+  ------------------------------------------------------- */
+
+  const humanReviewRows = [];
+  const inProgressRows = [];
+  const productReviewRows = [];
+
+  tickets.forEach(ticket => {
+
+    const ticketRow = {
+      id: ticket.ID || "",
+      customer: ticket.Customer || "",
+      message: ticket.Message
+        ? ticket.Message.substring(0, 50) + "..."
+        : "",
+      decision: ticket.AI_Decision || "",
+      status: ticket.Status || "",
+      healthScore: ticket.Health_Score || "",
+      riskLevel: ticket.Risk_Level || "",
+      scoreReasons: ticket.Score_Reasons || ""
+    };
+
+
+    if (ticket.Status === "IN_PROGRESS") {
+
+      inProgressRows.push(ticketRow);
+
+    } else if (
+      ticket.Status === "PENDING_REVIEW" &&
+      ticket.AI_Decision === "HUMAN_ESCALATION"
+    ) {
+
+      humanReviewRows.push(ticketRow);
+
+    } else if (
+      ticket.Status === "PENDING_REVIEW" &&
+      ticket.AI_Decision === "PRODUCT_REVIEW"
+    ) {
+
+      productReviewRows.push(ticketRow);
+
+    }
+
+  });
+
+  humanReviewRows.sort(
+    (a, b) =>
+      Number(a.healthScore || 0) -
+      Number(b.healthScore || 0)
+  );
+
+  inProgressRows.sort(
+    (a, b) =>
+      Number(a.healthScore || 0) -
+      Number(b.healthScore || 0)
+  );
+
+  productReviewRows.sort(
+    (a, b) =>
+      Number(a.healthScore || 0) -
+      Number(b.healthScore || 0)
+  );
+
+  const dashboardContainer =
+    document.getElementById("dashboardContainer");
+
+
+  if (tickets.length === 0) {
+
+    dashboardContainer.innerHTML = `
+      <div class="empty">
+        Import your JSON file to load dashboard data.
+      </div>
+    `;
+
+    return;
+  }
+
+
+  /* -------------------------------------------------------
+     HELPER FOR DASHBOARD TABLES
+  ------------------------------------------------------- */
+
+  function createBreakdownRows(counts) {
+
+    return Object.keys(counts)
+      .map(key => `
+        <tr>
+          <td>${escapeHtml(key)}</td>
+          <td>${counts[key]}</td>
+        </tr>
+      `)
+      .join("");
+
+  }
+
+  function createQueueTable(rows) {
+
+    return `
+      <table>
+
+        <thead>
+          <tr>
+            <th>Ticket ID</th>
+            <th>Customer</th>
+            <th>Issue Preview</th>
+            <th>AI Decision</th>
+            <th>Status</th>
+            <th>Health Score</th>
+            <th>Risk Level</th>
+            <th>Score Reasons</th>
+          </tr>
+        </thead>
+
+        <tbody>
+
+          ${rows.map(row => `
+
+  <tr
+    class="ticket-row"
+    onclick="openTicketById('${escapeHtml(row.id)}')"
+  >
+
+    <td>${escapeHtml(row.id)}</td>
+
+    <td>${escapeHtml(row.customer)}</td>
+
+    <td>${escapeHtml(row.message)}</td>
+
+    <td>${escapeHtml(row.decision)}</td>
+
+    <td>${escapeHtml(row.status)}</td>
+
+    <td>${escapeHtml(row.healthScore)}</td>
+
+    <td>${escapeHtml(row.riskLevel)}</td>
+
+    <td>${escapeHtml(row.scoreReasons)}</td>
+
+  </tr>
+
+`).join("")}
+
+        </tbody>
+
+      </table>
+    `;
+
+  }
+
+  dashboardContainer.innerHTML = `
+
+    <div class="dashboard-stats">
+
+      <div class="stat">
+        <span class="stat-number">
+          ${totalTickets}
+        </span>
+        <span class="stat-label">
+          Total Tickets
+        </span>
+      </div>
+
+      <div class="stat">
+        <span class="stat-number">
+          ${pendingReview}
+        </span>
+        <span class="stat-label">
+          Pending Review
+        </span>
+      </div>
+
+      <div class="stat">
+        <span class="stat-number">
+          ${completed}
+        </span>
+        <span class="stat-label">
+          Completed
+        </span>
+      </div>
+
+      <div class="stat">
+        <span class="stat-number">
+          ${escalations}
+        </span>
+        <span class="stat-label">
+          Human Escalations
+        </span>
+      </div>
+
+      <div class="stat">
+        <span class="stat-number">
+          ${(completionRate * 100).toFixed(0)}%
+        </span>
+        <span class="stat-label">
+          Completion Rate
+        </span>
+      </div>
+
+    </div>
+
+
+    <div class="dashboard-grid">
+
+
+      <div class="dashboard-section">
+
+        <h3>Tickets By Category</h3>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Category</th>
+              <th>Count</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            ${createBreakdownRows(categoryCounts)}
+          </tbody>
+        </table>
+
+      </div>
+
+
+      <div class="dashboard-section">
+
+        <h3>Tickets By Tier</h3>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Tier</th>
+              <th>Count</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            ${createBreakdownRows(tierCounts)}
+          </tbody>
+        </table>
+
+      </div>
+
+
+      <div class="dashboard-section">
+
+        <h3>Priority Breakdown</h3>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Priority</th>
+              <th>Count</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            ${createBreakdownRows(priorityCounts)}
+          </tbody>
+        </table>
+
+      </div>
+
+
+      <div class="dashboard-section">
+
+        <h3>Sentiment Breakdown</h3>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Sentiment</th>
+              <th>Count</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            ${createBreakdownRows(sentimentCounts)}
+          </tbody>
+        </table>
+
+      </div>
+
+
+      <div class="dashboard-section">
+
+        <h3>AI Decision Breakdown</h3>
+
+        <table>
+          <thead>
+            <tr>
+              <th>AI Decision</th>
+              <th>Count</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            ${createBreakdownRows(decisionCounts)}
+          </tbody>
+        </table>
+
+            </div>
+
+
+    </div>
+
+
+        <div class="dashboard-section">
+
+      <h3>Customer Risk Overview</h3>
+
+      <table>
+
+        <thead>
+          <tr>
+            <th>Risk Level</th>
+            <th>Tickets</th>
+          </tr>
+        </thead>
+
+        <tbody>
+
+          <tr>
+            <td>Critical</td>
+            <td>${riskCounts["Critical"]}</td>
+          </tr>
+
+          <tr>
+            <td>At Risk</td>
+            <td>${riskCounts["At Risk"]}</td>
+          </tr>
+
+          <tr>
+            <td>Healthy</td>
+            <td>${riskCounts["Healthy"]}</td>
+          </tr>
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+
+    <div class="dashboard-section">
+
+      <h3>🚨 SUPPORT QUEUE - ACTION REQUIRED</h3>
+
+
+      ${
+        humanReviewRows.length > 0
+          ? `
+            <h4>🚨 HUMAN ESCALATION - NEEDS REVIEW</h4>
+
+            ${createQueueTable(humanReviewRows)}
+          `
+          : ""
+      }
+
+
+      ${
+        inProgressRows.length > 0
+          ? `
+            <h4>🔧 IN PROGRESS - I'M WORKING ON THESE</h4>
+
+            ${createQueueTable(inProgressRows)}
+          `
+          : ""
+      }
+
+
+      ${
+        productReviewRows.length > 0
+          ? `
+            <h4>📦 PRODUCT REVIEW - NEEDS REVIEW</h4>
+
+            ${createQueueTable(productReviewRows)}
+          `
+          : ""
+      }
+
+
+      ${
+        humanReviewRows.length === 0 &&
+        inProgressRows.length === 0 &&
+        productReviewRows.length === 0
+          ? `
+            <div class="empty">
+              ✅ No pending actions. Queue is clear!
+            </div>
+          `
+          : ""
+      }
+
+    </div>
+
+
+  `;
+
+}
+
+/* ---------------------------------------------------------
+   CLEAR
+--------------------------------------------------------- */
+
+function clearTickets() {
+
+  tickets = [];
+  currentTicketIndex = null;
+
+  document.getElementById("ticketDetail")
+    .classList.remove("active");
+
+  document.querySelector(".panel")
+    .style.display = "block";
+
+  document.getElementById("jsonFile").value = "";
+
+  renderTickets();
+  updateStats();
+
+  showNotice("Tickets cleared.");
+
+}
+
+
+/* ---------------------------------------------------------
+   HELPERS
+--------------------------------------------------------- */
+
+function priorityBadge(priority) {
+
+  if (!priority) return "�";
+
+  const className =
+    priority.toLowerCase();
+
+  return `
+    <span class="badge ${className}">
+      ${escapeHtml(priority)}
+    </span>
+  `;
+
+}
+
+
+function statusBadge(status) {
+
+  if (!status) return "";
+
+  let className = "pending";
+
+  if (
+    status === "DONE" ||
+    status === "DONE_FINAL"
+  ) {
+    className = "done";
+  }
+
+  if (status === "APPROVED") {
+    className = "approved";
+  }
+
+  if (status === "ERROR") {
+    className = "error";
+  }
+
+  return `
+    <span class="badge ${className}">
+      ${escapeHtml(status)}
+    </span>
+  `;
+
+}
+
+
+function escapeHtml(value) {
+
+  if (value === null || value === undefined) {
+    return "";
+  }
+
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+
+}
+
+
+function showNotice(message) {
+
+  const notice =
+    document.getElementById("notice");
+
+  notice.textContent = message;
+  notice.style.display = "block";
+
+  setTimeout(() => {
+    notice.style.display = "none";
+  }, 4000);
+
+}
+
+
+/* ---------------------------------------------------------
+   INITIAL VIEW
+--------------------------------------------------------- */
+
+showTickets();
+
+</script>
+
+</body>
+</html>

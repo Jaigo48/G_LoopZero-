@@ -1,0 +1,82 @@
+[
+    {
+      "id": 1,
+      "category": "User Error",
+      "customer": "Sarah Jenkins",
+      "company": "Apex Logistics",
+      "tier": "Growth",
+      "message": "Hey team, I accidentally deleted a huge batch of active leads while trying to clean up our contact view. Is there any way to restore them, or did I just lose all that data?"
+    },
+    {
+      "id": 2,
+      "category": "Technical Bug",
+      "customer": "Marcus Thorne",
+      "company": "Vanguard Media",
+      "tier": "Enterprise",
+      "message": "URGENT: Since this morning's update, our team members keep getting logged out automatically every 5 minutes. It's making it impossible for our sales reps to log live calls."
+    },
+    {
+      "id": 3,
+      "category": "Feature Request",
+      "customer": "Elena Rostova",
+      "company": "Nova Solutions",
+      "tier": "Growth",
+      "message": "We love the platform, but is there a way to set up automated Slack notifications when an Enterprise deal moves to 'Closed-Won'? Right now we have to check the dashboard manually."
+    },
+    {
+      "id": 4,
+      "category": "User Error",
+      "customer": "David Kim",
+      "company": "Summit Retail",
+      "tier": "Startup",
+      "message": "I'm trying to export our monthly contact list into a CSV, but the downloaded file is completely blank. Am I clicking the wrong export button?"
+    },
+    {
+      "id": 5,
+      "category": "Technical Bug",
+      "customer": "Chloe Bennett",
+      "company": "BluePeak Tech",
+      "tier": "Enterprise",
+      "message": "The two-way calendar sync with Google Workspace seems broken. Meetings scheduled in the CRM aren't showing up on my Google Calendar, though it worked fine last week."
+    },
+    {
+      "id": 6,
+      "category": "Feature Request",
+      "customer": "Liam O'Connor",
+      "company": "GreenField Finance",
+      "tier": "Growth",
+      "message": "Would love to see multi-currency support added to the deal pipeline. We're closing contracts in EUR and GBP, but right now everything defaults to USD which messes up our forecasting."
+    },
+    {
+      "id": 7,
+      "category": "User Error",
+      "customer": "Jessica Alba",
+      "company": "Creative Minds Agency",
+      "tier": "Startup",
+      "message": "Help! I tried changing my user profile password and now I'm locked out entirely. The password reset email hasn't arrived in my inbox or spam folder."
+    },
+    {
+      "id": 8,
+      "category": "Technical Bug",
+      "customer": "Raj Patel",
+      "company": "Nexus Health",
+      "tier": "Enterprise",
+      "message": "Our custom reports dashboard is throwing a '504 Gateway Timeout' error every time we try to pull quarterly metrics. This is blocking our leadership review meeting today."
+    },
+    {
+      "id": 9,
+      "category": "Feature Request",
+      "customer": "Samantha Wright",
+      "company": "Urban Property Group",
+      "tier": "Growth",
+      "message": "Is there a dark mode version of the web app coming soon? A lot of our support reps work late shifts and the bright white interface is tough on the eyes."
+    },
+    {
+      "id": 10,
+      "category": "Technical Bug",
+      "customer": "Brian Taylor",
+      "company": "ByteCraft Labs",
+      "tier": "Startup",
+      "message": "The mobile iOS app keeps crashing immediately upon opening ever since I updated my iPhone to the latest OS version. I've tried reinstalling it twice."
+    }
+  ]
