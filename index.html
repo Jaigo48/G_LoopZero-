@@ -67,6 +67,14 @@
       color: #111827;
     }
 
+    .mode-button.active {
+      font-weight: 700;
+      border: 2px solid #2563eb;
+      box-shadow: 0 0 0 2px #dbeafe;
+      background-color: #2563eb; /* Vibrant blue fill */
+      color: #ffffff;            /* Crisp white text */
+    }
+
     .success {
       background: #16a34a;
       color: white;
@@ -218,6 +226,11 @@
     .error {
       background: #fee2e2;
       color: #991b1b;
+    }
+
+    .in-progress {
+      background: #e0e7ff;
+      color: #3730a3;
     }
 
     .detail {
@@ -376,6 +389,34 @@
 
   <button class="primary" onclick="runTriage()">
     Run Triage
+  </button>
+
+  <button class="secondary" onclick="showLoopZeroMode()">
+  Current Mode
+  </button>
+
+  <button
+  class="secondary mode-button"
+  id="modeSafeButton"
+  onclick="setLoopZeroMode('SAFE')"
+  >
+    SAFE
+  </button>
+
+    <button
+    class="secondary mode-button"
+    id="modeProductionButton"
+    onclick="setLoopZeroMode('PRODUCTION')"
+  >
+    PRODUCTION
+  </button>
+
+  <button
+    class="secondary mode-button"
+    id="modeAutoButton"
+    onclick="setLoopZeroMode('AUTO')"
+  >
+    AUTO
   </button>
 
   <button class="success" onclick="approveSelectedTickets()">
@@ -594,6 +635,8 @@ let currentTicketIndex = null;
 
 function showDashboard() {
 
+  updateDashboard();
+
   document.getElementById("dashboardPanel").style.display = "block";
   document.getElementById("ticketsPanel").style.display = "none";
 
@@ -611,6 +654,9 @@ function showTickets() {
 
   document.getElementById("dashboardPanel").style.display = "none";
   document.getElementById("ticketsPanel").style.display = "block";
+
+  renderTickets();
+  updateStats();
 
   const ticketDetail =
     document.getElementById("ticketDetail");
@@ -692,6 +738,107 @@ document.getElementById("jsonFile").addEventListener("change", function(event) {
 
 });
 
+let loopZeroMode =
+  localStorage.getItem("LOOPZERO_MODE") || "SAFE";
+
+function getLoopZeroMode() {
+  return loopZeroMode;
+}
+
+function showLoopZeroMode() {
+  alert(
+    "Current LoopZero Mode:\n\n" +
+    getLoopZeroMode()
+  );
+}
+
+
+function changeLoopZeroMode() {
+
+  const mode = prompt(
+    "Select LoopZero Mode:\n\n" +
+    "1. SAFE\n" +
+    "2. PRODUCTION\n" +
+    "3. AUTO"
+  );
+
+  if (mode === null) {
+    return;
+  }
+
+  const selections = {
+    "1": "SAFE",
+    "2": "PRODUCTION",
+    "3": "AUTO"
+  };
+
+  const selectedMode =
+    selections[mode.trim()];
+
+  if (!selectedMode) {
+    alert(
+      "Invalid selection.\n\n" +
+      "Choose 1, 2, or 3."
+    );
+    return;
+  }
+
+  loopZeroMode = selectedMode;
+
+  localStorage.setItem(
+    "LOOPZERO_MODE",
+    selectedMode
+  );
+
+  alert(
+    "LoopZero Mode changed to:\n\n" +
+    selectedMode
+  );
+}
+
+function setLoopZeroMode(mode) {
+
+  const validModes = [
+    "SAFE",
+    "PRODUCTION",
+    "AUTO"
+  ];
+
+  if (!validModes.includes(mode)) {
+    return;
+  }
+
+  loopZeroMode = mode;
+
+  localStorage.setItem(
+    "LOOPZERO_MODE",
+    mode
+  );
+
+  updateLoopZeroModeButtons();
+}
+
+function updateLoopZeroModeButtons() {
+
+  const buttons = {
+    SAFE: document.getElementById("modeSafeButton"),
+    PRODUCTION: document.getElementById("modeProductionButton"),
+    AUTO: document.getElementById("modeAutoButton")
+  };
+
+  Object.keys(buttons).forEach(mode => {
+
+    if (!buttons[mode]) {
+      return;
+    }
+
+    buttons[mode].classList.toggle(
+      "active",
+      loopZeroMode === mode
+    );
+
+  });
+}
 
 /* ---------------------------------------------------------
    TRIAGE
@@ -852,24 +999,14 @@ function runTriage() {
         "Thank you,\nLoopZero Support";
 
 
-    } else if (ticket.Category === "Feature Request") {
+} else if (ticket.Category === "Feature Request") {
 
       decisionResult = "PRODUCT_REVIEW";
 
       reasonResult =
-        "Customer feedback may influence future product improvements and should be reviewed by the product team for roadmap consideration.";
+        "Feature request requires product review.";
 
-      responseDraft =
-        "Hello " + ticket.Customer + ",\n\n" +
-        "Thank you for sharing your feature request.\n\n" +
-        "You mentioned:\n\"" +
-        messagePreview +
-        "\"\n\n" +
-        "We have documented your feedback and our product team will review it as part of our roadmap process.\n\n" +
-        "Thank you,\nLoopZero Support";
-
-
-    } else if (ticket.Category === "User Error") {
+} else if (ticket.Category === "User Error") {
 
       const seriousUserErrorKeywords = [
         "deleted",
@@ -885,13 +1022,27 @@ function runTriage() {
         "login failure"
       ];
 
-      const requiresHumanReview =
-        seriousUserErrorKeywords.some(keyword =>
-          lowerMessage.includes(keyword)
-        );
+      const isPasswordResetRecovery =
+        lowerMessage.includes("password reset") &&
+        (
+        lowerMessage.includes("email hasn't arrived") ||
+        lowerMessage.includes("email has not arrived") ||
+        lowerMessage.includes("reset email") ||
+        lowerMessage.includes("reset link")
+        ) &&
+        !lowerMessage.includes("data loss") &&
+        !lowerMessage.includes("deleted") &&
+        !lowerMessage.includes("security");
 
 
-      if (requiresHumanReview) {
+    const requiresHumanReview =
+      !isPasswordResetRecovery &&
+      seriousUserErrorKeywords.some(keyword =>
+      lowerMessage.includes(keyword)
+  );
+
+
+  if (requiresHumanReview) {
 
         decisionResult = "HUMAN_ESCALATION";
 
@@ -904,40 +1055,65 @@ function runTriage() {
           "Because your message involves a potential account access or data-loss issue, our support team will review it and follow up with you directly.\n\n" +
           "Thank you,\nLoopZero Support";
 
-      } else {
+      } else if (
+        lowerMessage.includes("password reset") &&
+        (
+          lowerMessage.includes("email hasn't arrived") ||
+          lowerMessage.includes("email has not arrived") ||
+          lowerMessage.includes("reset email") ||
+          lowerMessage.includes("reset link")
+        ) &&
+          !lowerMessage.includes("data loss") &&
+          !lowerMessage.includes("deleted") &&
+          !lowerMessage.includes("security")
+      ) {
 
         decisionResult = "AUTOMATED_RESPONSE";
 
         reasonResult =
-          "Customer can likely resolve this quickly through guided self-service resources.";
+          "Password-reset recovery request can be handled through guided self-service instructions.";
 
         responseDraft =
           "Hello " + ticket.Customer + ",\n\n" +
-          "Thank you for reaching out.\n\n" +
-          "It looks like you are trying to:\n\"" +
-          messagePreview +
-          "\"\n\n" +
-          "We have prepared a quick guide that walks you through how to find and use this feature:\n\n" +
-          "FAQ Guide:\n[YOUR EXISTING FAQ/LINK CODE]\n\n" +
-          "If you have any additional questions or need further assistance, please let us know and we will be happy to help.\n\n" +
+          "Thank you for reaching out. It looks like you are having trouble receiving the password reset email.\n\n" +
+          "Please check your spam or junk folder and confirm that the email address associated with your account is correct. If the reset email still does not arrive, please request a new password reset email and allow a few minutes for delivery.\n\n" +
+          "If you still cannot access your account after these steps, our support team can review the issue and assist you further.\n\n" +
           "Thank you,\nLoopZero Support";
 
-      }
+      } else {
 
+        decisionResult = "HUMAN_REVIEW";
+
+        reasonResult =
+          "User Error requires human review.";
+
+        responseDraft =
+          "Hello " + ticket.Customer + ",\n\n" +
+          "Thank you for reaching out. Our support team will review your request and follow up with you directly.\n\n" +
+          "Thank you,\nLoopZero Support";
+
+  }
+
+}
+
+
+    /* LOOPZERO MODE */
+
+    const currentMode = getLoopZeroMode();
+
+    if (
+      (currentMode === "PRODUCTION" ||
+      currentMode === "AUTO") &&
+      decisionResult === "AUTOMATED_RESPONSE"
+    ) {
+
+      statusResult = "DONE";
 
     } else {
 
-      decisionResult = "HUMAN_REVIEW";
-
-      reasonResult =
-        "Category not recognized. Human review required.";
+      statusResult = "PENDING_REVIEW";
 
     }
-
-
-    /* SAFE MODE */
-
-    statusResult = "PENDING_REVIEW";
 
 
     /* WRITE RESULTS */
@@ -1031,17 +1207,13 @@ function renderTickets() {
 
         <td>${escapeHtml(ticket.Tier)}</td>
 
-        <td>${escapeHtml(ticket.Sentiment || "�")}</td>
+        <td>${escapeHtml(ticket.Sentiment || "—")}</td>
 
-        <td>
-          ${priorityBadge(ticket.Priority)}
-        </td>
+        <td>${priorityBadge(ticket.Priority)}</td>
 
-        <td>${escapeHtml(ticket.AI_Decision || "�")}</td>
+        <td>${escapeHtml(ticket.AI_Decision || "—")}</td>
 
-        <td>
-          ${statusBadge(ticket.Status)}
-        </td>
+        <td>${statusBadge(ticket.Status)}</td>
 
       </tr>
 
@@ -1127,6 +1299,8 @@ function approveSelectedTickets() {
       return;
     }
 
+    ticket.Human_Notes =
+    ticket.Human_Notes || "";
     ticket.Status = "APPROVED";
     ticket.Approved_By = approvedBy;
     ticket.Approval_Time = approvalTime;
@@ -1137,6 +1311,7 @@ function approveSelectedTickets() {
 
   renderTickets();
   updateStats();
+  updateDashboard();
 
   showNotice(
     approvedCount +
@@ -1212,6 +1387,12 @@ function finalizeApprovedActions() {
     ticket.Status = finalStatus;
     ticket.Approved_By = approvalBy;
     ticket.Approval_Time = approvalTime;
+    ticket.Approved_By = approvalBy;
+    ticket.Approval_Time = approvalTime;
+
+    renderTickets();
+    updateStats();
+    updateDashboard();
 
     finalizedCount++;
 
@@ -1220,7 +1401,7 @@ function finalizeApprovedActions() {
 
   renderTickets();
   updateStats();
-
+  updateDashboard();
 
   if (finalizedCount === 0) {
 
@@ -1264,12 +1445,13 @@ function approveCurrentTicket() {
     return;
   }
 
-  ticket.Status = "APPROVED";
+    ticket.Status = "APPROVED";
   ticket.Approved_By = "Local User";
   ticket.Approval_Time = new Date().toLocaleString();
 
   renderTickets();
   updateStats();
+  updateDashboard();
   openTicket(currentTicketIndex);
 
   showNotice(
@@ -1327,6 +1509,7 @@ function finalizeCurrentTicket() {
 
   renderTickets();
   updateStats();
+  updateDashboard();
   openTicket(currentTicketIndex);
 
   showNotice(
@@ -1384,8 +1567,9 @@ function openTicket(index) {
   document.getElementById("detailPriority").textContent =
     ticket.Priority || "�";
 
-  document.getElementById("detailStatus").textContent =
-    ticket.Status || "�";
+  document.getElementById("detailStatus").innerHTML =
+    statusBadge(ticket.Status);
+  document.getElementById("detailStatus").className = "";
 
   document.getElementById("detailDecision").textContent =
     ticket.AI_Decision || "�";
@@ -1434,6 +1618,10 @@ function closeTicket() {
   document.getElementById("dashboardPanel").style.display = "none";
   document.getElementById("ticketsPanel").style.display = "block";
 
+  renderTickets();
+  updateStats();
+  updateDashboard();
+
 }
 
 /* ---------------------------------------------------------
@@ -1446,6 +1634,9 @@ function saveNotes() {
 
   tickets[currentTicketIndex].Human_Notes =
     document.getElementById("humanNotes").value;
+
+  renderTickets();
+  updateDashboard();
 
   showNotice("Human notes saved.");
 
@@ -1755,7 +1946,7 @@ function updateDashboard() {
 
     <td>${escapeHtml(row.decision)}</td>
 
-    <td>${escapeHtml(row.status)}</td>
+    <td>${statusBadge(row.status)}</td>
 
     <td>${escapeHtml(row.healthScore)}</td>
 
@@ -2045,6 +2236,7 @@ function clearTickets() {
 
   renderTickets();
   updateStats();
+  updateDashboard();
 
   showNotice("Tickets cleared.");
 
@@ -2084,8 +2276,19 @@ function statusBadge(status) {
     className = "done";
   }
 
-  if (status === "APPROVED") {
+  if (
+    status === "APPROVED" ||
+    status === "CORRECTED"
+  ) {
     className = "approved";
+  }
+
+  if (status === "CORRECTED") {
+    className = "approved";
+  }
+
+  if (status === "IN_PROGRESS") {
+    className = "in-progress";
   }
 
   if (status === "ERROR") {
@@ -2137,6 +2340,7 @@ function showNotice(message) {
 --------------------------------------------------------- */
 
 showTickets();
+updateLoopZeroModeButtons();
 
 </script>
 
