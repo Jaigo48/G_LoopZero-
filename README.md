@@ -120,62 +120,44 @@ This keeps the human responsible for defining what is safe to automate and where
 
 # Getting Started
 
-The project runs as a standalone HTML application. Ticket data is imported locally through the application rather than requiring a connection to Google Sheets or an external AI service.
-
-
+LoopZero is a browser-based demonstration application. The demonstration uses 10 fictional sample tickets stored in the project and loaded automatically when LoopZero opens.
 
 To begin:
 
-
-
 Open the LoopZero application.
 
-Choose Import JSON.
-
-Select the provided sample ticket JSON file.
+The sample tickets will load automatically.
 
 Run AI Triage to analyze the tickets.
 
 Review the results through the ticket table and dashboard.
 
-
+You can also use Import JSON to load a different compatible ticket dataset.
 
 You do not need to manually recreate the sample tickets or configure external AI services before beginning the demonstration.
-
-
 
 The demonstration uses local triage rules to evaluate the imported tickets and determine sentiment, priority, AI decision, response draft, and workflow status.
 
 # Step 1 — Import the Sample Tickets
 
-The demonstration uses 10 fictional sample tickets.
+The demonstration includes 10 fictional sample tickets.
 
+When LoopZero opens, the sample ticket data is loaded automatically.
 
+No manual file selection is required to begin the demonstration.
 
-From the LoopZero application:
-
-
-
-Choose Import JSON.
-
-Select the provided sample ticket JSON file.
-
-The tickets will load into the application.
-
-Run AI Triage after the tickets have been imported.
-
-
-
-Not required to manually recreate the sample tickets.
-
+Run AI Triage after the sample tickets have loaded.
 
 
 ## Demo Reset
 
 
 
-You can import the sample JSON again whenever you want to return the visible ticket data to its starting state.
+Click Clear to remove the current tickets.
 
+To restore the 10 sample tickets, simply refresh the page. LoopZero will automatically reload the sample tickets from data.json.
+
+You do not need to download or manually select a JSON file.
 
 \---
 
@@ -1131,7 +1113,7 @@ The recommended order for demonstrating LoopZero is:
 
 
 
-Use the LoopZero application to import the provided sample JSON.
+Once page loads, or refreshing the page, LoopZero application will import the provided sample JSON.
 
 
 \---
@@ -1698,26 +1680,6 @@ AUTO is included for experimentation but is not required for the main demonstrat
 
 # Troubleshooting
 
-## Tickets Are Not Appearing
-
-If the tickets are not visible in the LoopZero application:
-
-
-
-Choose Import JSON.
-
-Select the provided sample ticket JSON file.
-
-Confirm that the 10 sample tickets appear.
-
-Run the AI Triage process.
-
-
-
-If the tickets still do not appear after importing the sample JSON, verify that the provided JSON file is the expected sample-ticket file.
-
-\---
-
 ## The Dashboard Does Not Show My Latest Status
 
 The dashboard is a snapshot of the ticket data at the time it was generated. It is not automatically refreshed every time a ticket changes.
@@ -1982,7 +1944,8 @@ The main LoopZero application supports the following demonstration workflow:
 
 Workflow			      Purpose
 
-Import JSON			      Load the 10 fictional sample tickets
+Refresh Page/                  Load the 10 fictional sample tickets
+Import JSON			      
 
 AI Triage			      Analyze and classify the imported tickets
 
