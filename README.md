@@ -1,26 +1,19 @@
 # LoopZero AI
 
-LoopZero is a small AI-assisted Customer Success and Support ticket-triage demonstration built as a standalone HTML application.
-
+LoopZero is a small AI-assisted Customer Success and Support ticket-triage demonstration built as a standalone browser-based application.
 
 
 The project demonstrates how AI-assisted workflows can help a CSM or Support professional:
 
 
 
-Triage incoming customer tickets
-
-Identify sentiment, priority, and risk
-
-Separate human-review work from potential automation
-
-Assist with customer responses
-
-Track human approvals and completed work
-
-Experiment with controlled automation
-
-Review support operations through a dashboard
+- Triage incoming customer tickets
+- Identify sentiment, priority, and risk
+- Separate human-review work from potential automation
+- Assist with customer responses
+- Track human approvals and completed work
+- Experiment with controlled automation
+- Review support operations through a dashboard
 
 
 
@@ -46,64 +39,40 @@ The primary workflow is:
 
 
 
+```text
 Import tickets
-
-&#x20;     ↓
-
+   ↓
 Run AI Triage
-
-&#x20;     ↓
-
+   ↓
 Review ticket results
-
-&#x20;     ↓
-
+   ↓
 Review dashboard and customer risk
-
-&#x20;     ↓
-
+   ↓
 Identify tickets requiring human attention
-
-&#x20;     ↓
-
+   ↓
 Human works tickets that require investigation
-
-&#x20;     ↓
-
+   ↓
 Approve completed work
-
-&#x20;     ↓
-
+   ↓
 Finalize approved actions
-
-&#x20;     ↓
-
+   ↓
 Review updated results
-
-
+```
 
 Automation is handled separately:
 
 
-
+```text
 Human identifies a safe, repeatable pattern
-
-&#x20;     ↓
-
+   ↓
 Automation rule is defined
-
-&#x20;     ↓
-
+   ↓
 AI triage evaluates the ticket
-
-&#x20;     ↓
-
+   ↓
 PRODUCTION mode allows eligible automation
-
-&#x20;     ↓
-
+   ↓
 Eligible ticket becomes DONE
-
+```
 
 
 The important distinction is that AI triage and automation are separate decisions.
@@ -127,12 +96,6 @@ To begin:
 Open the LoopZero application.
 
 The sample tickets will load automatically.
-
-Run AI Triage to analyze the tickets.
-
-Review the results through the ticket table and dashboard.
-
-You can also use Import JSON to load a different compatible ticket dataset.
 
 You do not need to manually recreate the sample tickets or configure external AI services before beginning the demonstration.
 
@@ -208,25 +171,21 @@ The LoopZero Mode control allows you to switch between SAFE, PRODUCTION, and AUT
 In SAFE mode:
 
 
-
+```text
 AUTOMATED\_RESPONSE
-
-&#x20;       ↓
-
+      ↓
 PENDING\_REVIEW
-
+```
 
 
 In PRODUCTION or AUTO mode, an eligible automated response can become:
 
 
-
+```text
 AUTOMATED\_RESPONSE
-
-&#x20;       ↓
-
+       ↓
 DONE
-
+```
 
 
 Tickets with other decisions remain:
@@ -346,25 +305,17 @@ The dashboard reflects the ticket data available in the application. If ticket s
 This creates a useful operational rhythm:
 
 
-
+```text
 AI Triage
-
-&#x20;   ↓
-
+   ↓
 Dashboard
-
-&#x20;   ↓
-
+   ↓
 Identify risk
-
-&#x20;   ↓
-
+   ↓
 Take action
-
-&#x20;   ↓
-
+   ↓
 Review updated results
-
+```
 
 
 The dashboard is intended to provide an operational overview rather than replace the detailed ticket view.
@@ -422,25 +373,17 @@ The important distinction is that LoopZero is assisting with triage and decision
 The human-review workflow is:
 
 
-
+```text
 PENDING\_REVIEW
-
-&#x20;     ↓
-
+     ↓
 Human investigates / works ticket
-
-&#x20;     ↓
-
+     ↓
 Human determines the appropriate outcome
-
-&#x20;     ↓
-
+     ↓
 Human approval / finalization workflow
-
-&#x20;     ↓
-
+     ↓
 DONE\_FINAL
-
+```
 
 
 This is deliberately different from automated completion.
@@ -450,17 +393,13 @@ This is deliberately different from automated completion.
 An automated ticket follows:
 
 
-
+```text
 AUTOMATED\_RESPONSE
-
-&#x20;     ↓
-
+    ↓
 PRODUCTION or AUTO
-
-&#x20;     ↓
-
+    ↓
 DONE
-
+```
 
 
 Human review and controlled automation are therefore separate workflow paths.
@@ -586,25 +525,17 @@ DONE
 The demonstration is therefore:
 
 
-
+```text
 Ticket #7
-
-&#x20;   ↓
-
+   ↓
 Password-reset recovery pattern
-
-&#x20;   ↓
-
+   ↓
 AUTOMATED\_RESPONSE
-
-&#x20;   ↓
-
+   ↓
 PRODUCTION
-
-&#x20;   ↓
-
+   ↓
 DONE
-
+```
 
 
 This demonstrates the distinction between AI classification and automation execution.
@@ -751,135 +682,8 @@ SAFE
 PRODUCTION
 → AUTOMATED\\\\\\\_RESPONSE can become DONE
 → Other decisions remain PENDING\\\\\\\_REVIEW
-```
 
 This allows you to practice an automation pattern in SAFE mode before allowing it to operate in PRODUCTION.
-
-\---
-
-# Automation Boundary
-
-The most important part of a controlled automation rule is not simply the proposed response.
-
-
-
-It is the boundary.
-
-
-
-The boundary defines:
-
-
-
-What is safe to automate, and what must remain with a human?
-
-
-
-For example:
-
-
-
-Safe to automate:
-
-Simple password-reset recovery requests that meet the defined conditions
-
-
-
-Remain human:
-
-Feature requests requiring roadmap decisions
-
-Pricing questions
-
-Contract questions
-
-Account-specific issues
-
-Security concerns
-
-Data-loss issues
-
-Access problems
-
-Technical incidents
-
-
-
-This is how automation can be useful without treating every ticket as interchangeable.
-
-
-
-Ticket #7 demonstrates this principle by using a narrow password-reset recovery pattern rather than automatically handling every User Error ticket.
-
-\---
-
-# Escalation Trigger
-
-Every useful automation rule should also define when automation must stop and a human must take over.
-
-
-
-For the Ticket #7 password-reset recovery pattern, conditions such as the following should remain outside the automation boundary:
-
-
-
-If the customer reports data loss,
-
-account access problems,
-
-security concerns,
-
-or a production-impacting issue,
-
-do not automate.
-
-
-
-These conditions represent situations where the ticket requires human judgment, investigation, or escalation.
-
-
-
-The goal is not to make automation handle everything.
-
-
-
-The goal is to make automation handle the right things.
-
-\---
-
-# Proposed Response
-
-A controlled automation rule should define the response that will be sent when the ticket matches the approved automation boundary.
-
-
-
-For Ticket #7, the automated response is part of the existing User Error triage logic.
-
-
-
-Before allowing an automated response to operate in PRODUCTION, the response should be reviewed for:
-
-
-
-Accuracy
-
-Relevance to the customer's request
-
-Appropriate tone
-
-Unsupported promises or commitments
-
-Conditions that require human judgment
-
-Consistency with the automation boundary
-
-
-
-The response should only be used when the ticket matches the conditions that were deliberately defined for the automation.
-
-
-
-This keeps the automated response narrow, predictable, and consistent with the purpose of the automation rule.
 
 \---
 
@@ -920,29 +724,19 @@ The rule engine then adjusts the score based on signals in the ticket.
 For example, negative language can reduce the score:
 
 
-
+```text
 const negativeWords = \[
-
-&#x20; "urgent",
-
-&#x20; "broken",
-
-&#x20; "error",
-
-&#x20; "crashing",
-
-&#x20; "locked out",
-
-&#x20; "impossible",
-
-&#x20; "deleted",
-
-&#x20; "lose",
-
-&#x20; "timeout"
-
+ "urgent",
+ "broken",
+ "error",
+ "crashing",
+ "locked out",
+ "impossible",
+ "deleted",
+ "lose",
+ "timeout"
 ];
-
+```
 
 
 A negative signal can result in:
@@ -976,130 +770,6 @@ Critical
 These are intentionally simple demonstration rules rather than a production customer-health model.
 
 \---
-
-# Why Customer Health Matters to a CSM
-
-A support ticket is not always just a support ticket.
-
-A pattern of:
-
-* repeated frustration
-* access problems
-* unresolved technical issues
-* high-priority incidents
-* important-account problems
-
-can be a signal that a Customer Success Manager should pay attention to the broader customer relationship.
-
-That is why LoopZero surfaces customer risk alongside ticket operations.
-
-The goal is to connect:
-
-```text
-Support Activity
-      ↓
-Customer Risk
-      ↓
-CSM Awareness
-      ↓
-Proactive Customer Success
-```
-
-This helps demonstrate how a CSM and Support function can work from the same operational information.
-
-\---
-
-# Supporting Data and System Information
-
-LoopZero maintains supporting information behind the main ticket workflow.
-
-
-
-This information helps the demonstration track processing history, errors, completed human-reviewed work, cached analysis, and dashboard information where applicable.
-
-
-
-The normal user workflow is centered on the LoopZero application and its ticket view rather than requiring users to manage supporting data directly.
-
-
-
-The important concept is:
-
-
-
-The ticket workflow is the primary working surface. Supporting information exists behind that workflow to help the demonstration remain traceable, reviewable, and understandable.
-
-
-
-Users do not need to manually manage supporting system information to complete the main demonstration.
-
-\---
-
-# Dashboard and Support Queue
-
-The LoopZero dashboard is designed to give a CSM or Support professional a quick operational view without requiring them to inspect every ticket individually.
-
-
-
-The dashboard can surface information such as:
-
-
-
-Ticket volume
-
-Customer risk
-
-Critical tickets
-
-At-risk customers
-
-Human escalations
-
-Pending support actions
-
-
-
-The Support Queue provides a more actionable view of tickets requiring human attention.
-
-
-
-The dashboard should be treated as a snapshot of the current ticket data rather than a live real-time view.
-
-
-
-If ticket statuses or outcomes change, refresh or regenerate the dashboard so that it reflects the updated ticket state.
-
-
-
-For example:
-
-
-
-Dashboard generated
-
-&#x20;     ↓
-
-Ticket approved
-
-&#x20;     ↓
-
-Ticket finalized
-
-&#x20;     ↓
-
-Ticket becomes DONE\_FINAL
-
-&#x20;     ↓
-
-Dashboard refreshed
-
-&#x20;     ↓
-
-Dashboard reflects the new state
-
-
-
-This is particularly useful during the demonstration because the dashboard shows how the operational picture changes as tickets move through the workflow.
 
 \---
 
@@ -1267,333 +937,25 @@ DONE
 The demonstration is:
 
 
-
+```text
 Ticket #7
-
-&#x20;     ↓
-
+     ↓
 Password-reset recovery pattern
-
-&#x20;     ↓
-
+     ↓
 AUTOMATED\_RESPONSE
-
-&#x20;     ↓
-
+     ↓
 PRODUCTION
-
-&#x20;     ↓
-
+     ↓
 DONE
-
+```
 
 
 Ticket #7 remains the sole permanent automation example in this demonstration.
+---
 
-\---
+**You've completed the main LoopZero demonstration.**
 
-## 7\. In EXTRA.md- Automation Exercise — Ticket #9
-
-
-
-Ticket #9 is a separate training exercise.
-
-
-
-It demonstrates how an automation rule can be temporarily added to an existing ticket pattern and then reversed.
-
-
-
-The Feature Request rule is temporarily changed so that the appropriate informational Feature Request can receive:
-
-
-
-AUTOMATED\_RESPONSE
-
-
-
-In PRODUCTION, that eligible response can become:
-
-
-
-DONE
-
-
-
-The exercise then reverses the code change and restores Ticket #9 to:
-
-
-
-PRODUCT\_REVIEW
-
-&#x20;     ↓
-
-PENDING\_REVIEW
-
-
-
-This demonstrates that an automation rule can be deliberately changed and safely removed when necessary.
-
-\---
-
-## 8\. Demonstrate SAFE Mode
-
-
-
-After reversing the Ticket #9 automation, SAFE mode can be used to demonstrate the automation gate without allowing an eligible automated response to complete automatically.
-
-
-
-The relationship is:
-
-
-
-SAFE
-
-→ AUTOMATED\_RESPONSE remains PENDING\_REVIEW
-
-
-
-This provides a controlled way to observe and validate automation behavior.
-
-\---
-
-## The Overall Pattern
-
-
-
-The complete demonstration illustrates:
-
-
-
-Identify pattern
-
-&#x20;     ↓
-
-Define boundary
-
-&#x20;     ↓
-
-Test safely
-
-&#x20;     ↓
-
-Use PRODUCTION when appropriate
-
-&#x20;     ↓
-
-Monitor result
-
-&#x20;     ↓
-
-Reverse when necessary
-
-
-
-Ticket #9 demonstrates the separate process of temporarily changing an automation rule and then reversing that change.---
-
-# A CSM + Support Perspective
-
-LoopZero is intentionally designed around the overlap between Customer Success and Support.
-
-
-
-A Support professional may focus on:
-
-
-
-Resolving the customer's immediate problem
-
-Prioritizing incidents
-
-Escalating technical issues
-
-Responding efficiently
-
-Identifying repeatable support requests
-
-
-
-A CSM may focus on:
-
-
-
-Customer health
-
-Account importance
-
-Business impact
-
-Customer sentiment
-
-Relationship risk
-
-Product feedback
-
-Proactive follow-up
-
-
-
-LoopZero combines those perspectives.
-
-
-
-For example:
-
-
-
-Customer reports a serious issue
-
-&#x20;         ↓
-
-AI identifies high frustration
-
-&#x20;         ↓
-
-Ticket receives higher priority
-
-&#x20;         ↓
-
-Customer health may be affected
-
-&#x20;         ↓
-
-Support works the immediate problem
-
-&#x20;         ↓
-
-CSM can recognize the broader account risk
-
-
-
-This is the core reason the project includes both ticket-level analysis and customer-health information.
-
-
-
-The purpose is not to replace either function. It is to demonstrate how the same support information can help Support manage the immediate issue while giving Customer Success additional context about customer risk.
-
-\---
-
-# What LoopZero Is — and Is Not
-
-## LoopZero Is
-
-A demonstration of how AI-assisted support operations can combine:
-
-
-
-Ticket triage
-
-Risk identification
-
-Human review
-
-Controlled automation
-
-Customer response drafting
-
-Approval workflows
-
-Customer-health signals
-
-Dashboard-based operational visibility
-
-Reversible automation exercises
-
-## LoopZero Is Not
-
-LoopZero is not intended to be:
-
-
-
-A production support platform
-
-A replacement for a CRM
-
-A complete customer-health system
-
-A fully autonomous support agent
-
-A production-grade security architecture
-
-A production-ready AI governance framework
-
-
-
-The automation rules are intentionally simple so the workflow can be understood and demonstrated.
-
-
-
-Ticket #7 provides the final controlled automation example, while Ticket #9 provides a separate training exercise showing how an automation rule can be temporarily added and then reversed.
-
-\---
-
-# Important Safety Principle
-
-The project intentionally separates:
-
-
-
-AI decision
-
-
-
-from:
-
-
-
-automation
-
-
-
-An AI classification does not automatically mean that a ticket should be automated.
-
-
-
-Before an automation rule is used, the human defines:
-
-
-
-Whether the pattern is repeatable
-
-Whether the response is safe
-
-What the automation boundary should be
-
-What conditions require human escalation
-
-Whether the automation should operate in PRODUCTION
-
-
-
-This distinction is demonstrated in two different ways:
-
-
-
-Ticket #7
-
-→ Final controlled automation
-
-
-
-Ticket #9
-
-→ Temporary automation exercise
-
-→ Reversal back to human review
-
-
-
-This is why the project includes SAFE, PRODUCTION, and AUTO modes.
-
-
-
-SAFE allows automation behavior to be observed without automatically completing an eligible ticket.
-
-
-
-PRODUCTION and AUTO allow an eligible AUTOMATED\_RESPONSE to become DONE.
-
+If you'd like to experiment with the code behind the workflow, continue with the five-minute experiment below. For more advanced exercises involving automation behavior, see `EXTRA.md`.
 \---
 
 # Mode Practice
@@ -1678,374 +1040,23 @@ AUTO is included for experimentation but is not required for the main demonstrat
 
 \---
 
-# Troubleshooting
-
-## The Dashboard Does Not Show My Latest Status
-
-The dashboard is a snapshot of the ticket data at the time it was generated. It is not automatically refreshed every time a ticket changes.
-
-
-
-If a ticket status or outcome changes, refresh or regenerate the dashboard in the LoopZero application so that it reflects the latest ticket state.
-
-
-
-For example:
-
-
-
-Ticket status changes
-
-&#x20;     ↓
-
-Refresh / regenerate dashboard
-
-&#x20;     ↓
-
-Dashboard reflects the updated state
-
-\---
-
-## A Ticket Did Not Become DONE
-
-If a ticket did not become DONE, check:
-
-
-
-The current LoopZero mode
-
-The AI\_Decision
-
-Whether the decision is AUTOMATED\_RESPONSE
-
-Whether the automation rule actually matches the ticket
-
-Whether the ticket is already in a completed or review status
-
-
-
-The current automation gate is:
-
-
-
-const currentMode = getLoopZeroMode();
-
-
-
-if (
-
-&#x20; (currentMode === "PRODUCTION" ||
-
-&#x20; currentMode === "AUTO") \&\&
-
-&#x20; decisionResult === "AUTOMATED\_RESPONSE"
-
-) {
-
-
-
-&#x20; statusResult = "DONE";
-
-
-
-} else {
-
-
-
-&#x20; statusResult = "PENDING\_REVIEW";
-
-
-
-}
-
-
-
-Therefore, an eligible ticket becomes DONE only when:
-
-
-
-LoopZero mode = PRODUCTION or AUTO
-
-AND
-
-AI\_Decision = AUTOMATED\_RESPONSE
-
-
-
-A ticket with:
-
-
-
-PRODUCT\_REVIEW
-
-
-
-or:
-
-
-
-HUMAN\_ESCALATION
-
-
-
-remains:
-
-
-
-PENDING\_REVIEW
-
-
-
-Likewise, an AUTOMATED\_RESPONSE remains PENDING\_REVIEW when LoopZero is operating in SAFE mode.
-
-
-
-If Ticket #9 is being used for the temporary automation exercise, also verify that the temporary Feature Request code change is currently active. After the automation is reversed, Ticket #9 should correctly return to PRODUCT\_REVIEW and PENDING\_REVIEW.
-
-\---
-
-## A Ticket Remains in PENDING\_REVIEW in SAFE Mode
-
-This is expected behavior.
-
-
-
-In SAFE mode, an eligible AUTOMATED\_RESPONSE does not become DONE.
-
-
-
-The current automation gate allows completion only when the mode is PRODUCTION or AUTO and the AI decision is AUTOMATED\_RESPONSE:
-
-
-
-const currentMode = getLoopZeroMode();
-
-
-
-if (
-
-&#x20; (currentMode === "PRODUCTION" ||
-
-&#x20; currentMode === "AUTO") \&\&
-
-&#x20; decisionResult === "AUTOMATED\_RESPONSE"
-
-) {
-
-
-
-&#x20; statusResult = "DONE";
-
-
-
-} else {
-
-
-
-&#x20; statusResult = "PENDING\_REVIEW";
-
-
-
-}
-
-
-
-Therefore:
-
-
-
-SAFE
-
-&#x20;   ↓
-
-AUTOMATED\_RESPONSE
-
-&#x20;   ↓
-
-PENDING\_REVIEW
-
-
-
-The purpose of SAFE mode is to allow the automation behavior to be observed and validated without automatically completing the ticket.
-
-\---
-
-## Automation Was Reversed
-
-If Ticket #9 no longer becomes an AUTOMATED\_RESPONSE, this may mean the temporary automation change has already been reversed.
-
-
-
-To verify the final state, open the current triage function and locate the Feature Request section.
-
-
-
-The original Feature Request behavior should be restored so that it assigns:
-
-
-
-decisionResult = "PRODUCT\_REVIEW";
-
-
-
-The Feature Request logic should also use the original Product Review reason and response draft.
-
-
-
-After restoring the original code, run AI Triage again.
-
-
-
-Ticket #9 should return to:
-
-
-
-AI\_Decision:
-
-PRODUCT\_REVIEW
-
-
-
-Status:
-
-PENDING\_REVIEW
-
-
-
-The intended final state is:
-
-
-
-Ticket #7
-
-→ AUTOMATED\_RESPONSE
-
-→ DONE in PRODUCTION
-
-
-
-Ticket #9
-
-→ PRODUCT\_REVIEW
-
-→ PENDING\_REVIEW
-
-
-
-This confirms that Ticket #9 has returned to the normal human-review workflow and that Ticket #7 remains the sole permanent automation demonstration.
-
-\---
-
-# Project Menu
-
-The main LoopZero application supports the following demonstration workflow:
-
-
-
-Workflow			      Purpose
-
-Refresh Page/                  Load the 10 fictional sample tickets
-Import JSON			      
-
-AI Triage			      Analyze and classify the imported tickets
-
-Dashboard			      Review customer risk and support-queue information
-
-Human Review			Work tickets that require investigation or judgment
-
-Approval and Finalization	Complete the human-controlled workflow
-
-LoopZero Mode			Switch between SAFE, PRODUCTION, and AUTO
-
-Controlled Automation		Allow an eligible AUTOMATED\_RESPONSE to become DONE
-
-Automation Reversal		Restore a temporary automation rule to its original human-review behavior
-
-
-
-The primary automation demonstration uses Ticket #7.
-
-
-
-Ticket #9 is a separate training exercise used to demonstrate how an automation rule can be temporarily added and then reversed.  EXTRA.md has Ticket #9 exercise.
-
-\---
 
 # Final Takeaway
 
-LoopZero demonstrates a simple but important support-automation principle:
+LoopZero demonstrates a simple but important principle:
 
+**AI can help decide what should happen to a ticket, while explicit rules determine what the system is allowed to do automatically.**
 
+Throughout this demonstration, you saw tickets move through:
 
-Do not automate the ticket just because AI can classify it. Automate a well-defined, repeatable pattern with a clear boundary and a clear way to reverse it.
+Ticket → AI Triage → AI Decision → Human Review or Controlled Automation → Final Status
 
+You also saw that not every AI decision should result in automatic completion. Some tickets require human review, while others can be handled automatically when the rules and operating mode allow it.
 
+The goal of LoopZero is not to automate everything.
 
-The project demonstrates that process:
+The goal is to demonstrate how automation can be controlled, observable, and reversible.
 
+**You've completed the main LoopZero demonstration.**
 
-
-Customer Ticket
-
-&#x20;     ↓
-
-AI Triage
-
-&#x20;     ↓
-
-Risk + Priority + Decision
-
-&#x20;     ↓
-
-Human Review OR Controlled Automation
-
-&#x20;     ↓
-
-Completion
-
-&#x20;     ↓
-
-Monitoring
-
-&#x20;     ↓
-
-Reversal when necessary
-
-
-
-For a CSM or Support professional, the value is not simply reducing the number of tickets that require human attention.
-
-
-
-The larger opportunity is to spend human time where it matters most:
-
-
-
-Routine + Safe
-
-&#x20;     → Automation
-
-
-
-Complex + Risky
-
-&#x20;     → Human
-
-
-
-High Customer Risk
-
-&#x20;     → CSM Awareness + Support Action
-
-
-
-Ticket #7 demonstrates the final controlled automation path.
-
-
-
-Ticket #9 demonstrates that an automation rule can be temporarily introduced and then reversed back to the normal human-review workflow.
-
-
-
-That is the core idea behind LoopZero AI.
-
+If you'd like to experiment with the code behind the workflow, continue with the five-minute experiment below. For more advanced exercises involving automation behavior, see `EXTRA.md`.
