@@ -2336,11 +2336,78 @@ function showNotice(message) {
 
 
 /* ---------------------------------------------------------
+   LOAD DEFAULT DEMO DATA
+--------------------------------------------------------- */
+
+async function loadDefaultData() {
+
+  try {
+
+    const response = await fetch("data.json");
+
+    if (!response.ok) {
+      throw new Error("Could not load data.json.");
+    }
+
+    const imported = await response.json();
+
+    if (!Array.isArray(imported)) {
+      throw new Error("JSON must contain an array of tickets.");
+    }
+
+    tickets = imported.map(ticket => ({
+
+      ID: ticket.id,
+      Category: ticket.category || "",
+      Customer: ticket.customer || "",
+      Company: ticket.company || "",
+      Tier: ticket.tier || "",
+      Message: ticket.message || "",
+
+      Sentiment: "",
+      Action: "",
+      Priority: "",
+      AI_Decision: "",
+      AI_Reason: "",
+      Status: "OPEN",
+      Approved_By: "",
+      Approval_Time: "",
+      Human_Notes: "",
+      AI_Response_Draft: "",
+      Last_Import: new Date().toLocaleString(),
+
+      Health_Score: "",
+      Risk_Level: "",
+      Score_Reasons: ""
+
+    }));
+
+    renderTickets();
+    updateStats();
+    updateDashboard();
+
+    showNotice(
+      `${tickets.length} demo ticket${tickets.length === 1 ? "" : "s"} loaded.`
+    );
+
+  } catch (error) {
+
+    console.error("Could not load default data:", error);
+
+    showTickets();
+
+  }
+
+}
+
+
+/* ---------------------------------------------------------
    INITIAL VIEW
 --------------------------------------------------------- */
 
 showTickets();
 updateLoopZeroModeButtons();
+loadDefaultData();
 
 </script>
 
