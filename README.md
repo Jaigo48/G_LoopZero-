@@ -562,12 +562,12 @@ The main statuses demonstrated by the project are:
 
 |Status|Meaning|
 |-|-|
-|`PENDING\\\\\\\_REVIEW`|Human attention is still required.|
+|`PENDING_REVIEW`|Human attention is still required.|
 |`APPROVED`|A human has approved the proposed action.|
 |`DONE`|An automated action has completed.|
 |`CORRECTED`|A human has corrected or adjusted the AI result.|
-|`DONE\\\\\\\_FINAL`|A human-approved workflow has been finalized.|
-|`IN\\\\\\\_PROGRESS`|The ticket is actively being worked.|
+|`DONE_FINAL`|A human-approved workflow has been finalized.|
+|`IN_PROGRESS`|The ticket is actively being worked.|
 |`ERROR`|The system encountered an error while processing the ticket.|
 
 These statuses help separate **AI recommendation**, **human approval**, and **actual completion**.
@@ -583,26 +583,26 @@ There are two different completion paths in LoopZero.
 A ticket requiring human work follows:
 
 ```text
-PENDING\\\\\\\_REVIEW
+PENDING_REVIEW
       ↓
 Human works ticket
       ↓
-Human\\\\\\\_Notes
+Human\_Notes
       ↓
 APPROVED
       ↓
 Finalize Approved Actions
       ↓
-DONE\\\\\\\_FINAL
+DONE_FINAL
 ```
 
 The approval is explicitly recorded.
 
 The project stores:
 
-* `Approved\\\\\\\_By`
-* `Approval\\\\\\\_Time`
-* `Human\\\\\\\_Notes`
+* `Approved_By`
+* `Approval_Time`
+* `Human_Notes`
 
 The finalization process also writes a record to the learning log.
 
@@ -615,7 +615,7 @@ An approved automation pattern follows:
 ```text
 AI Analysis
       ↓
-AUTOMATED\\\\\\\_RESPONSE
+AUTOMATED_RESPONSE
       ↓
 PRODUCTION
       ↓
@@ -639,35 +639,35 @@ The relevant logic is:
 
 
 
-&#x20;   const currentMode = getLoopZeroMode();
+   const currentMode = getLoopZeroMode();
 
 
 
-&#x20;   if (
+   if (
 
-&#x20;     (currentMode === "PRODUCTION" ||
+     (currentMode === "PRODUCTION" ||
 
-&#x20;     currentMode === "AUTO") \&\&
+     currentMode === "AUTO") \&\&
 
-&#x20;     decisionResult === "AUTOMATED\_RESPONSE"
+     decisionResult === "AUTOMATED\_RESPONSE"
 
-&#x20;   ) {
-
-
-
-&#x20;     statusResult = "DONE";
+   ) {
 
 
 
-&#x20;   } else {
+     statusResult = "DONE";
 
 
 
-&#x20;     statusResult = "PENDING\_REVIEW";
+   } else {
 
 
 
-&#x20;   }
+     statusResult = "PENDING\_REVIEW";
+
+
+
+   }
 
 ```
 
@@ -677,11 +677,11 @@ The important relationship is:
 
 
 SAFE
-→ Everything remains PENDING\\\\\\\_REVIEW
+→ Everything remains PENDING_REVIEW
 
 PRODUCTION
-→ AUTOMATED\\\\\\\_RESPONSE can become DONE
-→ Other decisions remain PENDING\\\\\\\_REVIEW
+→ AUTOMATED_RESPONSE can become DONE
+→ Other decisions remain PENDING_REVIEW
 
 This allows you to practice an automation pattern in SAFE mode before allowing it to operate in PRODUCTION.
 
@@ -768,8 +768,6 @@ Critical
 
 
 These are intentionally simple demonstration rules rather than a production customer-health model.
-
-\---
 
 \---
 
