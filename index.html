@@ -1126,7 +1126,45 @@ function runTriage() {
     ticket.Status = statusResult;
     ticket.AI_Response_Draft = responseDraft;
 
-  });
+    // --- GOOGLE SHEET COPY LOGIC (Renamed variables to prevent crashes) ---
+    const sheetMessage = ticket.Message ? ticket.Message.toLowerCase() : "";
+    const sheetTier = ticket.Tier ? ticket.Tier.toString() : "";
+    
+    let score = 100;
+    let reasons = [];
+
+    // Sentiment Analysis
+    const negativeWords = ["urgent", "broken", "error", "crashing", "locked out", "impossible", "deleted", "lose", "timeout"];
+    const positiveWords = ["love", "great", "thanks", "appreciate", "happy"];
+
+    if (negativeWords.some(word => sheetMessage.includes(word))) {
+      score -= 30;
+      reasons.push("Negative Sentiment");
+    } else if (positiveWords.some(word => sheetMessage.includes(word))) {
+      score += 10;
+    }
+
+    // Tier Risk (Enterprise/Growth penalty if already negative)
+    if ((sheetTier === "Enterprise" || sheetTier === "Growth") && score < 80) {
+      score -= 10;
+      reasons.push("High Tier Risk");
+    }
+
+    // Cap score between 0 and 100
+    score = Math.max(0, Math.min(100, score));
+
+    // Determine Risk Level
+    let riskLevel = "Healthy";
+    if (score <= 60) riskLevel = "Critical";
+    else if (score <= 80) riskLevel = "At Risk";
+
+    // Assign to your exact code property names
+    ticket.Health_Score = score;
+    ticket.Risk_Level = riskLevel;
+    ticket.Score_Reasons = reasons.length > 0 ? reasons.join(", ") : "";
+
+});
+
 
 
   renderTickets();
